@@ -9,7 +9,7 @@ const SARIF_LOG: &str = "D:/PythonProjects/Archery/outputs/total_results.sarif";
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>>{
-    load_sarif_result(SARIF_LOG).await;
+    load_sarif_result(SARIF_LOG).await?;
     
     let client = get_a_client().await;
     let query = "你能验证codeql的漏洞报告吗，如果可以的话，你需要我告诉你哪些信息。";

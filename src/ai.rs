@@ -7,7 +7,7 @@ use std::error::Error;
 const API_KEY: &str = "sk-api-OhrNszaS2-4Y7GwxfKF0G-7mw-9Gf5tBamMvVKSeigenBZRMJ7S9h1t2P87si1MnKMwqvpl627oNAD1KJlfOznoUQuw1icjcUtKasaeWIUw6MI2Bqe00XYc";
 const BASE_URL: &str = "https://api.minimaxi.com/v1";
 const MODEL_NAME: &str = "MiniMax-M2.7";
-const SYSTEM_PROMPT: &str  = "你是一个白盒专家，我通过codeql、semgrep等获得了一些sarif报告，但我没有时间去验证报告里漏洞的真伪。我会给你污点传播链路以及所涉及的相关源码，你需要帮我验证它们的真伪，同时评估漏洞的重要等级，并提供修复建议。"
+const SYSTEM_PROMPT: &str  = "你是一个白盒专家，我通过codeql、semgrep等获得了一些sarif报告，但我没有时间去验证报告里漏洞的真伪。我会给你污点传播链路以及所涉及的相关源码，你需要帮我验证它们的真伪，同时评估漏洞的重要等级，并提供修复建议。";
 
 
 pub async fn get_a_client() -> Client<OpenAIConfig>{
