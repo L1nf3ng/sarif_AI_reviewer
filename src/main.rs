@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use opensource_sast_verifier::ai::{get_a_client, chat_with_model};
+use opensource_sast_verifier::ai_chat::{get_a_client, chat_with_model};
 use opensource_sast_verifier::sarif_reader::load_sarif_result;
 use tokio;
 
@@ -12,7 +12,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
     load_sarif_result(SARIF_LOG).await?;
     
     let client = get_a_client().await;
-    let query = "你能验证codeql的漏洞报告吗，如果可以的话，你需要我告诉你哪些信息。";
+    let query = "你能验证codeql的漏洞报告吗，如果可以的话，你需要我告诉你需要哪些信息。";
     
     match chat_with_model(client, query).await {
         Ok(res) => {
