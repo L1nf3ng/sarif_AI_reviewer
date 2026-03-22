@@ -10,3 +10,4 @@ async-openai = { version = "0.33", features= ["full"]}
 tokio = { version = "1", features = ["full"] }
 dotenv = "0.15"
 tree-sitter = "0.26"
+tree-sitter-python = "0.25"
