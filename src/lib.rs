@@ -2,7 +2,7 @@ pub mod ai_chat;
 pub mod sarif_reader;
 pub mod source_reader;
 
-pub use sarif_reader::{build_vulnerability_summary, format_for_llm, TaintStep, VulnerabilitySummary};
+pub use sarif_reader::{AuditResult, TaintStep, VulnerabilitySummary, build_vulnerability_summary, export_to_csv, format_for_llm};
 
 
 #[cfg(test)]

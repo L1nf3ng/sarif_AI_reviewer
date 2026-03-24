@@ -6,7 +6,7 @@ use crate::source_reader::get_source_line;
 
 
 /// 污点传播链路中的单个步骤
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct TaintStep {
     /// 步骤序号
     pub step_number: usize,
@@ -20,8 +20,21 @@ pub struct TaintStep {
     pub source_code: String,
 }
 
+/// AI 评审结果
+#[derive(Debug, Clone, Default)]
+pub struct AuditResult {
+    /// 评审结论（真漏洞/假阳性/需人工确认）
+    pub verdict: Option<String>,
+    /// 漏洞等级（高危/中危/低危/信息）
+    pub severity: Option<String>,
+    /// 修复建议
+    pub fix_suggestion: Option<String>,
+    /// AI 完整原始回复
+    pub raw_response: Option<String>,
+}
+
 /// 单个漏洞的汇总信息
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct VulnerabilitySummary {
     /// 规则 ID
     pub rule_id: String,
@@ -33,6 +46,8 @@ pub struct VulnerabilitySummary {
     pub line_number: usize,
     /// 污点传播链路
     pub taint_chain: Vec<TaintStep>,
+    /// AI 评审结果
+    pub audit_result: AuditResult,
 }
 
 
@@ -260,6 +275,7 @@ pub async fn build_vulnerability_summary(
                         file_path,
                         line_number,
                         taint_chain,
+                        audit_result: AuditResult::default(),
                     });
                 }
             }
@@ -297,4 +313,52 @@ pub fn format_for_llm(summaries: &[VulnerabilitySummary]) -> String {
     }
 
     output
+}
+
+/// 将污点传播链路格式化为单行文本
+fn format_taint_chain(chain: &[TaintStep]) -> String {
+    chain
+        .iter()
+        .map(|step| {
+            format!(
+                "Step{} [{}:{}] {} | {}",
+                step.step_number,
+                step.file_path,
+                step.line_number,
+                step.message,
+                step.source_code.trim()
+            )
+        })
+        .collect::<Vec<_>>()
+        .join(" => ")
+}
+
+/// 将漏洞评审结果导出为 CSV 文件（可用 Excel 打开）
+pub fn export_to_csv(
+    summaries: &[VulnerabilitySummary],
+    output_path: &str,
+) -> Result<(), Box<dyn Error>> {
+    let mut writer = csv::Writer::from_path(output_path)?;
+
+    // 写入表头
+    writer.write_record([
+        "规则ID", "描述", "主位置", "污点传播链路", "评审结论", "风险等级", "修复建议",
+    ])?;
+
+    // 写入数据行
+    for summary in summaries {
+        writer.write_record([
+            &summary.rule_id,
+            &summary.message,
+            &format!("{}:{}", summary.file_path, summary.line_number),
+            &format_taint_chain(&summary.taint_chain),
+            summary.audit_result.verdict.as_deref().unwrap_or("待评审"),
+            summary.audit_result.severity.as_deref().unwrap_or("未知"),
+            summary.audit_result.fix_suggestion.as_deref().unwrap_or(""),
+        ])?;
+    }
+
+    writer.flush()?;
+    println!("CSV 已保存至: {}", output_path);
+    Ok(())
 }
