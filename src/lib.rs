@@ -19,4 +19,11 @@ mod test_package{
             println!("源代码片段为：{}", res);
         }
     }
+    
+    #[tokio::test]
+    async fn test_get_specific_line_code(){
+        let input_file = "D:/PythonProjects/Archery/sql/data_dictionary.py";
+        let result = source_reader::get_source_line(input_file, "python", 148).await.unwrap();
+        println!("源代码行为为：{}", result);
+    }
 }

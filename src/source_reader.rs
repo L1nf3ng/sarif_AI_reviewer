@@ -128,3 +128,20 @@ pub async fn parse_source_file(filepath: &str, language: &str, line_numbers: Vec
     let code_results: Vec<String> = result_map.into_values().collect();
     Ok(code_results)
 }
+
+pub async fn get_source_line(filepath: &str, _language: &str, line_number: usize) -> Result<String, Box<dyn Error>>{
+    let source_code = fs::read_to_string(filepath).await?;
+
+    // 按行分割源代码
+    let lines: Vec<&str> = source_code.lines().collect();
+
+    // 检查行号是否在有效范围内（1-based index）
+    if line_number == 0 || line_number > lines.len() {
+        return Err(format!("行号 {} 超出有效范围 (1-{})", line_number, lines.len()).into());
+    }
+
+    // 返回指定行的源代码（line_number 是 1-based，所以需要减 1）
+    let line_content = lines[line_number - 1].to_string();
+
+    Ok(line_content)
+}
