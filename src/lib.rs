@@ -2,6 +2,8 @@ pub mod ai_chat;
 pub mod sarif_reader;
 pub mod source_reader;
 
+pub use sarif_reader::{build_vulnerability_summary, format_for_llm, TaintStep, VulnerabilitySummary};
+
 
 #[cfg(test)]
 mod test_package{
