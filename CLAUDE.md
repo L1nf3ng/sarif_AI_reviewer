@@ -55,6 +55,7 @@ src/
 - `tokio` (1)：异步运行时，支持 async/await
 - `tree-sitter` (0.26)：多语言源码解析，支持 Python 和 Java
 - `dotenv` (0.15)：加载 .env 环境变量
+- `csv` (1.3)：CSV 文件读写，用于导出漏洞评审结果
 
 `sarif_rust` 主要类型：
 - `SarifLog`：根结构，包含一次或多次分析运行
@@ -69,9 +70,11 @@ src/
 ### SARIF 阅读器模块（`src/sarif_reader.rs`）
 - `load_sarif_result()`：解析 SARIF 文件并打印前 3 条结果
 - `TaintStep`：污点传播链路中的单个步骤（序号、message、文件路径、行号、源代码）
-- `VulnerabilitySummary`：单个漏洞汇总信息（ruleId、描述、主位置、污点链路）
+- `AuditResult`：AI 评审结果（结论、风险等级、修复建议、原始回复）
+- `VulnerabilitySummary`：单个漏洞汇总信息（ruleId、描述、主位置、污点链路、AI评审结果）
 - `build_vulnerability_summary()`：组合 SARIF 解析 + 源码行获取，返回所有漏洞的结构化汇总。**路径解析**：SARIF 文件所在目录的上一级作为源码根目录，URI 为相对路径拼接后读取
 - `format_for_llm()`：将 `VulnerabilitySummary` 格式化为 LLM 可读的文本
+- `export_to_csv()`：将漏洞汇总及 AI 评审结果导出为 CSV 文件（可用 Excel 打开）
 - `remove_nulls()`：清理 JSON 输出中的 null 值
 
 ### 源码解析模块（`src/source_reader.rs`）
@@ -103,5 +106,6 @@ MODEL_NAME=your_model_name_here
 - SARIF 文件路径目前在 `src/main.rs` 中硬编码（`SARIF_LOG` 常量）
 - `load_sarif_result()` 默认处理并打印每个运行的前 3 个结果
 - 新增 `build_vulnerability_summary()` + `format_for_llm()` 组合，可生成完整的漏洞汇总文本发送给 LLM
+- `audit_vulnerability()` 逐条调用 LLM 评审，`export_to_csv()` 将结果导出为 CSV 文件留痕
 - 异步操作使用 tokio 运行时和 `#[tokio::main]`
 - LLM 集成使用 OpenAI 兼容接口连接 MiniMax API
