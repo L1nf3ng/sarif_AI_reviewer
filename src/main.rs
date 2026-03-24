@@ -2,9 +2,11 @@ use std::error::Error;
 
 use opensource_sast_verifier::ai_chat::{get_a_client, chat_with_model};
 use opensource_sast_verifier::sarif_reader::load_sarif_result;
+use opensource_sast_verifier::source_reader::parse_source_file;
 use tokio;
 
 const SARIF_LOG: &str = "D:/PythonProjects/Archery/outputs/total_results.sarif";
+const TEST_SOURCE_FILE: &str = "D:/PythonProjects/Archery/sql/data_dictionary.py";
 
 
 #[tokio::main]
@@ -24,5 +26,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
             eprint!("Something bad happend! {:?}", e);
         }
     }
+    
+
     Ok(())
 }

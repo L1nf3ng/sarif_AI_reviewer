@@ -6,10 +6,17 @@ pub mod source_reader;
 #[cfg(test)]
 mod test_package{
     use super::source_reader;
-    
     #[test]
     fn test_parse_python(){
         source_reader::parse_source_string();
-        
+    }
+    
+    #[tokio::test]
+    async fn test_parse_pythonfile(){
+        let input_file = "D:/PythonProjects/Archery/sql/data_dictionary.py";
+        let results = source_reader::parse_source_file(input_file, "python", vec![146,148]).await.unwrap();
+        for res in results{
+            println!("源代码片段为：{}", res);
+        }
     }
 }
